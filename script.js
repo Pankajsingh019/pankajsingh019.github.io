@@ -12,7 +12,7 @@ function typeAnim(){
     wj++;  
     if(wj===word.length){ wdel=true; setTimeout(typeAnim,1100); return; }  
   } else {  
-    el.textContent=`I'm an ${word.substring(0,wj-1)}`;  
+    el.textContent=`I'm ${word.substring(0,wj-1)}`;  
     wj--;  
     if(wj===0){ wdel=false; wi=(wi+1)%words.length; }  
   }  

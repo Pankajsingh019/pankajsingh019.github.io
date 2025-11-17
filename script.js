@@ -1,24 +1,36 @@
 AOS.init({duration:700, once:true});
 
 // Typing effect  
-const words=["an Aspirant","a Designer","a Problem Solver"];  
-let wi=0, wj=0, wdel=false;  
-function typeAnim(){  
-  const el=document.getElementById("typing-text");  
-  if(!el) return;  
-  const word=words[wi];  
-  if(!wdel){  
-    el.textContent=`I'm ${word.substring(0,wj+1)}`;  
-    wj++;  
-    if(wj===word.length){ wdel=true; setTimeout(typeAnim,1100); return; }  
-  } else {  
-    el.textContent=`I'm ${word.substring(0,wj-1)}`;  
-    wj--;  
-    if(wj===0){ wdel=false; wi=(wi+1)%words.length; }  
-  }  
-  setTimeout(typeAnim, wdel?60:60);  
-}  
-typeAnim();  
+const words = ["an Aspirant", "a Problem Solver", "a Designer"];
+let wi = 0, wj = 0, wdel = false;
+
+function typeAnim() {
+    const el = document.getElementById("typing-text");
+    if (!el) return;
+
+    const word = words[wi];
+
+    if (!wdel) {
+        el.textContent = `I'm ${word.substring(0, wj + 1)}`;
+        wj++;
+        if (wj === word.length) {
+            wdel = true;
+            setTimeout(typeAnim, 1100);
+            return;
+        }
+    } else {
+        el.textContent = `I'm ${word.substring(0, wj - 1)}`;
+        wj--;
+        if (wj === 0) {
+            wdel = false;
+            wi = (wi + 1) % words.length;
+        }
+    }
+
+    setTimeout(typeAnim, wdel ? 60 : 60);
+}
+
+typeAnim();
 
 // Dark mode toggle  
 function toggleDarkMode(){  

@@ -1,66 +1,92 @@
-/* ================================
-   script.js — Portfolio
-   ================================ */
+// =============================
+// Mobile Menu Toggle
+// =============================
+const hamburger = document.getElementById("hamburger");
+const mobileMenu = document.getElementById("mobile-menu");
+const closeMenu = document.getElementById("close-menu");
 
-//Selectors
-const hamburger = document.querySelector(".hamburger");
-const menuOverlay = document.querySelector(".menu-overlay");
-const closeBtn = document.querySelector(".close-menu");
-const menuLinks = document.querySelectorAll(".menu-panel a");
-
-// ---- 1. Open mobile menu ----
-hamburger?.addEventListener("click", () => {
-    menuOverlay.style.display = "flex";
-    document.body.style.overflow = "hidden";     // stop background scroll
+hamburger.addEventListener("click", () => {
+    mobileMenu.classList.add("active");
+    document.body.style.overflow = "hidden";
 });
 
-// ---- 2. Close mobile menu ----
-const closeMenu = () => {
-    menuOverlay.style.display = "none";
-    document.body.style.overflow = "auto";        // restore scroll
-};
-
-closeBtn?.addEventListener("click", closeMenu);
-
-// ---- 3. Close menu when clicking any link ----
-menuLinks.forEach(link => {
-    link.addEventListener("click", closeMenu);
+closeMenu.addEventListener("click", () => {
+    mobileMenu.classList.remove("active");
+    document.body.style.overflow = "auto";
 });
 
-// ---- 4. Close menu by clicking outside panel ----
-menuOverlay?.addEventListener("click", (e) => {
-    if (e.target === menuOverlay) {
-        closeMenu();
+mobileMenu.addEventListener("click", (e) => {
+    if (e.target === mobileMenu) {
+        mobileMenu.classList.remove("active");
+        document.body.style.overflow = "auto";
     }
 });
 
-// ---- 5. Smooth Scroll for internal links ----
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function (e) {
-        const targetId = this.getAttribute("href");
-        const targetEl = document.querySelector(targetId);
-        if (targetEl) {
-            e.preventDefault();
-            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+// Close menu when link is clicked
+document.querySelectorAll("#mobile-menu a").forEach(link => {
+    link.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+        document.body.style.overflow = "auto";
     });
 });
 
-// ---- 6. Active link highlight on scroll (optional) ----
-const sections = document.querySelectorAll("section[id]");
-const navItems = document.querySelectorAll(".nav-links a");
+
+// =============================
+// Active Link Highlight
+// =============================
+const navLinks = document.querySelectorAll("nav a");
+const sections = document.querySelectorAll("section");
 
 window.addEventListener("scroll", () => {
     let current = "";
-    sections.forEach((section) => {
-        const top = section.offsetTop - 120;
-        if (scrollY >= top) current = section.getAttribute("id");
+
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (pageYOffset >= sectionTop) {
+            current = section.getAttribute("id");
+        }
     });
 
-    navItems.forEach((a) => {
-        a.classList.remove("active-nav");
-        if (a.getAttribute("href") === `#${current}`) {
-            a.classList.add("active-nav");
+    navLinks.forEach(link => {
+        link.classList.remove("active-link");
+        if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active-link");
         }
     });
 });
+
+
+// =============================
+// Smooth Scroll
+// =============================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function (e) {
+        const target = document.querySelector(this.getAttribute("href"));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth" });
+        }
+    });
+});
+
+
+// =============================
+// Lazy Loading Images
+// =============================
+const lazyImages = document.querySelectorAll("img[data-src]");
+
+const loadImage = (img) => {
+    img.src = img.dataset.src;
+    img.onload = () => img.classList.add("loaded");
+};
+
+const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            loadImage(entry.target);
+            obs.unobserve(entry.target);
+        }
+    });
+});
+
+lazyImages.forEach(img => observer.observe(img));

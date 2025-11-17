@@ -1,14 +1,14 @@
 AOS.init({duration:700, once:true});
 
 // Typing effect  
-const words=["Aspirant","Designer","Problem Solver"];  
+const words=["an Aspirant","a Designer","a Problem Solver"];  
 let wi=0, wj=0, wdel=false;  
 function typeAnim(){  
   const el=document.getElementById("typing-text");  
   if(!el) return;  
   const word=words[wi];  
   if(!wdel){  
-    el.textContent=`I'm an ${word.substring(0,wj+1)}`;  
+    el.textContent=`I'm ${word.substring(0,wj+1)}`;  
     wj++;  
     if(wj===word.length){ wdel=true; setTimeout(typeAnim,1100); return; }  
   } else {  

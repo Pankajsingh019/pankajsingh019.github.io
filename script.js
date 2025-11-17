@@ -1,92 +1,125 @@
-// =============================
-// Mobile Menu Toggle
-// =============================
-const hamburger = document.getElementById("hamburger");
-const mobileMenu = document.getElementById("mobile-menu");
-const closeMenu = document.getElementById("close-menu");
+AOS.init({duration:700, once:true});
 
-hamburger.addEventListener("click", () => {
-    mobileMenu.classList.add("active");
-    document.body.style.overflow = "hidden";
-});
+// Typing effect  
+const words=["Aspirant","Designer","Problem Solver"];  
+let wi=0, wj=0, wdel=false;  
+function typeAnim(){  
+  const el=document.getElementById("typing-text");  
+  if(!el) return;  
+  const word=words[wi];  
+  if(!wdel){  
+    el.textContent=`I'm an ${word.substring(0,wj+1)}`;  
+    wj++;  
+    if(wj===word.length){ wdel=true; setTimeout(typeAnim,1100); return; }  
+  } else {  
+    el.textContent=`I'm an ${word.substring(0,wj-1)}`;  
+    wj--;  
+    if(wj===0){ wdel=false; wi=(wi+1)%words.length; }  
+  }  
+  setTimeout(typeAnim, wdel?60:60);  
+}  
+typeAnim();  
 
-closeMenu.addEventListener("click", () => {
-    mobileMenu.classList.remove("active");
-    document.body.style.overflow = "auto";
-});
+// Dark mode toggle  
+function toggleDarkMode(){  
+  document.body.classList.toggle('dark');  
+  const btn=document.querySelector('.toggle-btn');  
+  btn.textContent=document.body.classList.contains('dark')?"☀️":"🌙";  
+}  
 
-mobileMenu.addEventListener("click", (e) => {
-    if (e.target === mobileMenu) {
-        mobileMenu.classList.remove("active");
-        document.body.style.overflow = "auto";
-    }
-});
+// Navbar show/hide on scroll  
+let lastScroll = 0;  
+window.addEventListener('scroll', ()=> {  
+  const current = window.pageYOffset;  
+  const nav = document.getElementById('navbar');  
+  if (current > lastScroll && current > 80) nav.classList.add('hide'); else nav.classList.remove('hide');  
+  lastScroll = current <= 0 ? 0 : current;  
+});  
 
-// Close menu when link is clicked
-document.querySelectorAll("#mobile-menu a").forEach(link => {
-    link.addEventListener("click", () => {
-        mobileMenu.classList.remove("active");
-        document.body.style.overflow = "auto";
-    });
-});
+// Progress bar + top button logic  
+const topBtn=document.getElementById('topBtn');  
+window.onscroll = function(){  
+  const st = document.documentElement.scrollTop || document.body.scrollTop;  
+  const sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;  
+  document.getElementById('progress-bar').style.width = (sh ? (st/sh*100) : 0) + '%';  
+  if(st > 200){ topBtn.style.display = 'flex'; } else { topBtn.style.display = 'none'; }  
+};  
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}  
+topBtn.addEventListener('click', scrollToTop);  
 
+// Loading screen hide  
+window.addEventListener('load', ()=>{  
+  const L=document.getElementById('loading-screen');  
+  if(L){ L.style.opacity = '0'; setTimeout(()=> { L.style.display='none' }, 600); }  
+});  
 
-// =============================
-// Active Link Highlight
-// =============================
-const navLinks = document.querySelectorAll("nav a");
-const sections = document.querySelectorAll("section");
+// Skills animation when visible  
+const skillObserver = new IntersectionObserver((entries, obs) => {  
+  entries.forEach(entry=>{  
+    if(entry.isIntersecting){  
+      const el = entry.target.querySelector('.skill-fill');  
+      if(el){  
+        const pct = el.getAttribute('data-percent') || '0';  
+        el.style.width = pct + '%';  
+        el.parentElement.setAttribute('aria-valuenow', pct);  
+      }  
+      obs.unobserve(entry.target);  
+    }  
+  });  
+},{threshold:0.35});  
+document.querySelectorAll('.skill').forEach(s => skillObserver.observe(s));  
 
-window.addEventListener("scroll", () => {
-    let current = "";
+// Testimonials slider  
+const track = document.getElementById('testimonialTrack');  
+const dots = document.querySelectorAll('.ctrl-dot');  
+let tIndex = 0;  
+function showTestimonial(idx){  
+  if(!track) return;  
+  tIndex = idx % track.children.length;  
+  if(tIndex < 0) tIndex = track.children.length - 1;  
+  track.style.transform = `translateX(-${tIndex*100}%)`;  
+  dots.forEach(d=>d.classList.remove('active'));  
+  if(dots[tIndex]) dots[tIndex].classList.add('active');  
+}  
+dots.forEach(d=>{  
+  d.addEventListener('click', ()=> showTestimonial(parseInt(d.dataset.index)));  
+});  
+showTestimonial(0);  
+let tAuto = setInterval(()=> showTestimonial((tIndex+1)% (track?track.children.length:1) ), 4000);  
+if(track){  
+  track.addEventListener('mouseenter', ()=> clearInterval(tAuto));  
+  track.addEventListener('mouseleave', ()=> tAuto = setInterval(()=> showTestimonial((tIndex+1)%track.children.length), 4000));  
+}  
 
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 100;
-        if (pageYOffset >= sectionTop) {
-            current = section.getAttribute("id");
-        }
-    });
+// Contact form submission  
+const form = document.getElementById('contactForm');  
+const alertBox = document.getElementById('successAlert');  
+if(form){  
+  form.addEventListener('submit', function(e){  
+    e.preventDefault();  
+    const data = new FormData(form);  
+    fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })  
+      .then(response => {  
+        if (response.ok) {  
+          alertBox.textContent = '✅ Message sent successfully!';  
+          alertBox.style.display = 'block';  
+          setTimeout(()=> alertBox.style.display='none', 4000);  
+          form.reset();  
+        } else {  
+          alertBox.textContent = '❌ Could not send message. Try again later.';  
+          alertBox.style.background = '#e74c3c';  
+          alertBox.style.display = 'block';  
+          setTimeout(()=> { alertBox.style.display='none'; alertBox.style.background = '' }, 4500);  
+        }  
+      })  
+      .catch(()=> {  
+        alertBox.textContent = '❌ Network error. Try again later.';  
+        alertBox.style.background = '#e74c3c';  
+        alertBox.style.display = 'block';  
+        setTimeout(()=> { alertBox.style.display='none'; alertBox.style.background = '' }, 4500);  
+      });  
+  });  
+}  
 
-    navLinks.forEach(link => {
-        link.classList.remove("active-link");
-        if (link.getAttribute("href") === `#${current}`) {
-            link.classList.add("active-link");
-        }
-    });
-});
-
-
-// =============================
-// Smooth Scroll
-// =============================
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function (e) {
-        const target = document.querySelector(this.getAttribute("href"));
-        if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: "smooth" });
-        }
-    });
-});
-
-
-// =============================
-// Lazy Loading Images
-// =============================
-const lazyImages = document.querySelectorAll("img[data-src]");
-
-const loadImage = (img) => {
-    img.src = img.dataset.src;
-    img.onload = () => img.classList.add("loaded");
-};
-
-const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            loadImage(entry.target);
-            obs.unobserve(entry.target);
-        }
-    });
-});
-
-lazyImages.forEach(img => observer.observe(img));
+// Dynamic year  
+document.getElementById('year').textContent = new Date().getFullYear();

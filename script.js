@@ -15,7 +15,7 @@ function typeAnim() {
         wj++;
         if (wj === word.length) {
             wdel = true;
-            setTimeout(typeAnim, 1100);
+            setTimeout(typeAnim, 580);
             return;
         }
     } else {

@@ -103,35 +103,35 @@ if(track){
   track.addEventListener('mouseleave', ()=> tAuto = setInterval(()=> showTestimonial((tIndex+1)%track.children.length), 4000));  
 }  
 
-// Contact form submission  
-const form = document.getElementById('contactForm');  
-const alertBox = document.getElementById('successAlert');  
-if(form){  
-  form.addEventListener('submit', function(e){  
-    e.preventDefault();  
-    const data = new FormData(form);  
-    fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })  
-      .then(response => {  
-        if (response.ok) {  
-          alertBox.textContent = '✅ Message sent successfully!';  
-          alertBox.style.display = 'block';  
-          setTimeout(()=> alertBox.style.display='none', 4000);  
-          form.reset();  
-        } else {  
-          alertBox.textContent = '❌ Could not send message. Try again later.';  
-          alertBox.style.background = '#e74c3c';  
-          alertBox.style.display = 'block';  
-          setTimeout(()=> { alertBox.style.display='none'; alertBox.style.background = '' }, 4500);  
-        }  
-      })  
-      .catch(()=> {  
-        alertBox.textContent = '❌ Network error. Try again later.';  
-        alertBox.style.background = '#e74c3c';  
-        alertBox.style.display = 'block';  
-        setTimeout(()=> { alertBox.style.display='none'; alertBox.style.background = '' }, 4500);  
-      });  
-  });  
-}  
+// ================== CONTACT FORM ==================
+const form = document.getElementById('contactForm');
+const alertBox = document.getElementById('successAlert');
+if (form && alertBox) {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
+      .then(response => {
+        if (response.ok) {
+          alertBox.textContent = '✅ Message sent successfully!';
+          alertBox.style.display = 'block';
+          setTimeout(() => alertBox.style.display = 'none', 4000);
+          form.reset();
+        } else {
+          alertBox.textContent = '❌ Could not send message. Try again later.';
+          alertBox.style.background = '#e74c3c';
+          alertBox.style.display = 'block';
+          setTimeout(() => { alertBox.style.display = 'none'; alertBox.style.background = ''; }, 4500);
+        }
+      })
+      .catch(() => {
+        alertBox.textContent = '❌ Network error. Try again later.';
+        alertBox.style.background = '#e74c3c';
+        alertBox.style.display = 'block';
+        setTimeout(() => { alertBox.style.display = 'none'; alertBox.style.background = ''; }, 4500);
+      });
+  });
+}
 
 // Dynamic year  
 document.getElementById('year').textContent = new Date().getFullYear();
